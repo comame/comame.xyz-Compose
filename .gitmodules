@@ -1,0 +1,15 @@
+[submodule "static-pages"]
+	path = static-pages
+	url = git@github.com:comame/comame.xyz-Static-Pages.git
+[submodule "pwa-tools"]
+	path = pwa-tools
+	url = git@github.com:comame/comame.xyz-PWA-Tools.git
+[submodule "js-lib"]
+	path = js-lib
+	url = git@github.com:comame/comame.xyz_JavaScript-Libraries.git
+[submodule "home"]
+	path = home
+	url = git@github.com:comame/comame.xyz.git
+[submodule "assets"]
+	path = assets
+	url = git@github.com:comame/comame.xyz_Private-Assets.git

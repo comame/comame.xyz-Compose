@@ -1,0 +1,36 @@
+version: "3"
+
+services: 
+  
+  home: 
+    build: ./home
+    restart: always
+
+  pwa-tools:
+    build: ./pwa-tools
+    restart: always
+
+  assets:
+    build: ./assets
+    restart: always
+  
+  js-lib:
+    build: ./js-lib
+    restart: always
+
+  static-pages:
+    build: ./static-pages
+    restart: always
+
+  nginx:
+    build: ./nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on: 
+      - home
+      - pwa-tools
+      - assets
+      - js-lib
+      - static-pages
