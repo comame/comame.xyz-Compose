@@ -13,3 +13,6 @@
 [submodule "assets"]
 	path = assets
 	url = git@github.com:comame/comame.xyz_Private-Assets.git
+[submodule "nginx"]
+	path = nginx
+	url = git@github.com:comame/comame.xyz_Reverse-Proxy.git
