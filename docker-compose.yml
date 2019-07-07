@@ -28,6 +28,9 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    logging: 
+      options: 
+        max-size: 50m
     depends_on: 
       - home
       - pwa-tools
