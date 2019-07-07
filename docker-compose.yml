@@ -3,23 +3,33 @@ version: "3"
 services: 
   
   home: 
-    build: ./home
+    image: comameito/static-server
+    volumes:
+      - ./home:/files:ro
     restart: always
 
   pwa-tools:
-    build: ./pwa-tools
+    image: comameito/static-server
+    volumes:
+      - ./pwa-tools:/files:ro
     restart: always
 
   assets:
-    build: ./assets
+    image: comameito/static-server
+    volumes:
+      - ./assets:/files:ro
     restart: always
   
   js-lib:
-    build: ./js-lib
+    image: comameito/static-server
+    volumes:
+      - ./js-lib:/files:ro
     restart: always
 
   static-pages:
-    build: ./static-pages
+    image: comameito/static-server
+    volumes:
+      - ./static-pages:/files:ro
     restart: always
 
   gitlab-slackbot:
