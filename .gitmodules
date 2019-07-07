@@ -16,3 +16,6 @@
 [submodule "nginx"]
 	path = nginx
 	url = git@github.com:comame/comame.xyz_Reverse-Proxy.git
+[submodule "gitlab-slackbot"]
+	path = gitlab-slackbot
+	url = git@github.com:comame/GitLab-Slackbot.git

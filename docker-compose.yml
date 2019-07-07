@@ -22,6 +22,10 @@ services:
     build: ./static-pages
     restart: always
 
+  gitlab-slackbot:
+    build: ./gitlab-slackbot
+    restart: always
+
   nginx:
     build: ./nginx
     restart: always
@@ -31,9 +35,3 @@ services:
     logging: 
       options: 
         max-size: 50m
-    depends_on: 
-      - home
-      - pwa-tools
-      - assets
-      - js-lib
-      - static-pages
