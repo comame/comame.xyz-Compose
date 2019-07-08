@@ -19,3 +19,6 @@
 [submodule "gitlab-slackbot"]
 	path = gitlab-slackbot
 	url = git@github.com:comame/GitLab-Slackbot.git
+[submodule "shortlink"]
+	path = shortlink
+	url = git@github.com:comame/comame.xyz-Shortlink.git

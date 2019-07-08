@@ -2,6 +2,8 @@ version: "3"
 
 services: 
   
+  # Static Pages
+
   home: 
     image: comameito/static-server
     volumes:
@@ -32,6 +34,33 @@ services:
       - ./static-pages:/files:ro
     restart: always
 
+
+  # Shortlink 
+
+  shortlink:
+    build: ./shortlink
+    restart: always
+
+
+  # MongoDB
+
+  mongo:
+    image: mongo
+    restart: always
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    
+  
+  # GitLab Slackbot
+      
   gitlab-slackbot:
     build: ./gitlab-slackbot
     restart: always
