@@ -22,3 +22,6 @@
 [submodule "shortlink"]
 	path = shortlink
 	url = git@github.com:comame/comame.xyz-Shortlink.git
+[submodule "dotfiles"]
+	path = dotfiles
+	url = git@github.com:comame/dotfiles.git

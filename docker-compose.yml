@@ -1,10 +1,10 @@
 version: "3"
 
-services: 
-  
+services:
+
   # Static Pages
 
-  home: 
+  home:
     image: comameito/static-server
     volumes:
       - ./home:/files:ro
@@ -21,7 +21,7 @@ services:
     volumes:
       - ./assets:/files:ro
     restart: always
-  
+
   js-lib:
     image: comameito/static-server
     volumes:
@@ -34,8 +34,14 @@ services:
       - ./static-pages:/files:ro
     restart: always
 
+  dotfiles:
+    image: comameito/static-server
+    volumes:
+      - ./dotfiles:/files:ro
+    restart: always
 
-  # Shortlink 
+
+  # Shortlink
 
   shortlink:
     build: ./shortlink
@@ -49,10 +55,10 @@ services:
     restart: always
     volumes:
       - ./mongo-data:/data/db
-    
-  
+
+
   # GitLab Slackbot
-      
+
   gitlab-slackbot:
     build: ./gitlab-slackbot
     restart: always
@@ -63,6 +69,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    logging: 
-      options: 
+    logging:
+      options:
         max-size: 50m
