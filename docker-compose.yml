@@ -40,6 +40,11 @@ services:
       - ./dotfiles:/files:ro
     restart: always
 
+  slides:
+    image: comameito/index-server
+    volumes:
+      - ./slides:/files:ro
+    restart: always
 
   # Shortlink
 
