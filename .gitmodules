@@ -25,3 +25,6 @@
 [submodule "dotfiles"]
 	path = dotfiles
 	url = git@github.com:comame/dotfiles.git
+[submodule "slides"]
+	path = slides
+	url = git@github.com:comame/Slides.git
