@@ -28,3 +28,6 @@
 [submodule "slides"]
 	path = slides
 	url = git@github.com:comame/Slides.git
+[submodule "blog"]
+	path = blog
+	url = git@github.com:comame/blog.comame.xyz.git

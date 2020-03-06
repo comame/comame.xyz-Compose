@@ -46,6 +46,12 @@ services:
       - ./slides:/files:ro
     restart: always
 
+  blog:
+    image: comameito/static-server
+    volumes:
+     - ./blog/build:/files:ro
+    restart: always
+
   # Shortlink
 
   shortlink:
