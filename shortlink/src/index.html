@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Shortlink Console</title>
+</head>
+<body>
+    <form id='form'>
+        <label>Shortcut: <input id='shortcut'></label>
+        <label>URL: <input id='url'></label>
+        <label>Password: <input id='password' type='password'></label>
+        <input type='button' id='create' value='create'>
+        <input type='button' id='delete' value='delete'>
+    </form>
+
+    <ul id='list'></ul>
+
+    <script>
+        const form = document.getElementById('form')
+        document.getElementById('create').onclick = () => {
+            const obj = {
+                id: form.shortcut.value,
+                url: form.url.value,
+                password: form.password.value
+            }
+
+            fetch('./create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(obj)
+            }).then(() => {
+                location.reload()
+            })
+        }
+        document.getElementById('delete').onclick = () => {
+            const id = form.shortcut.value
+            const obj = {
+                password: form.password.value
+            }
+            
+            fetch('./delete/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(obj)
+            }).then(() => {
+                location.reload()
+            })
+        }
+
+        fetch('./list').then(res => {
+            return res.json()
+        }).then(array => {
+            array.forEach(short => {
+                document.getElementById('list').innerHTML += `
+                        <li>${short.key} : <a href='./${short.key}'>${short.url}</a></li>
+                `
+            })
+        })
+    </script>
+</body>
+</html>

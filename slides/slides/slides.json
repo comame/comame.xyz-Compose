@@ -1,0 +1,16 @@
+[{
+    "id": "slide-1",
+    "title": "Slide 1",
+    "filename": "slide-1.html"
+}, {
+    "id": "slide-2",
+    "title": "Slide 2",
+    "filename": "slide-2.html"
+}, {
+    "title": "External Link Example",
+    "external": "https://example.com"
+}, {
+    "title": "sample",
+    "id": "sample",
+    "filename": "sample.html"
+}]

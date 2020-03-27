@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide</title>
+</head>
+<body>
+
+    <div component='list'>
+        <ul id='slide-list'></ul>
+    </div>
+    <div component='slide'>
+        <div id='control'>
+            <svg id='prev' class='control-icon' viewbox='0 0 2 2' transform='rotate(180)'>
+                <path d='M 0 0 V 2 L 2 1 z'>
+            </svg>
+            <svg id='next' class='control-icon' viewbox='0 0 2 2'>
+                <path d='M 0 0 V 2 L 2 1 z'>
+            </svg>
+        </div>
+        <div id='shadow'></div>
+        <style>
+            body {
+                margin: 0;
+            }
+            #slide-root {
+                display: none;
+            }
+            #control {
+                position: fixed;
+                justify-content: space-evenly;
+                align-items: center;
+
+                bottom: 1rem;
+                right: 1rem;
+                display: flex;
+                width: 6rem;
+                height: 3rem;
+
+                z-index: 10;
+            }
+            .control-icon {
+                width: 1.5rem;
+                fill: rgba(0, 0, 0, 0.75);
+            }
+        </style>
+    </div>
+    <div component-place></div>
+
+    <script src='https://comame.xyz/assets/script/spa-router.js'></script>
+    <script>
+        Object.prototype.with = function(func) {
+            func(this)
+            return this
+        }
+
+        router.initialize([{
+            path: '/',
+            redirect: '/list'
+        }, {
+            path: '/list',
+            component: 'list',
+            name: 'Slides'
+        }, {
+            path: '/:id',
+            redirect: '/:id/1'
+        }, {
+            path: '/:id/:page',
+            component: 'slide',
+        }, {
+            notfound: '/list'
+        }], {
+            mode: 'history',
+            entrypoint: '/slides'
+        })
+
+        window.addEventListener('component-create', e => {
+            const component = e.detail.component
+
+            switch (component.name) {
+                case 'slide': {
+                    slidePage(component.params.id)
+                    break
+                }
+                case 'list': {
+                    listPage()
+                    break
+                }
+            }
+        })
+
+        async function getSlides() {
+            if (window.slides) return window.slides
+
+            let hasError
+            const slideRes = await fetch(router.resolve('/slides/slides.json')).catch(() => {
+                hasError = true
+            })
+            if (hasError || !slideRes || !slideRes.ok) {
+                return
+            }
+
+            window.slides =  await slideRes.json()
+            return window.slides
+        }
+
+        async function getSlideHtml(slide) {
+            if (window.slide && window.slide[slide.id]) return window.slide[slide.id]
+            if (!window.slide) window.slide = {}
+
+            const slideRes = await fetch(router.resolve(`/slides/${slide.filename}`))
+            const slideHtml = await slideRes.text()
+
+            window.slide[slide.id] = slideHtml
+            return slideHtml
+        }
+
+        async function getSlideCss() {
+            if (window.slideStyle) return window.slideStyle
+
+            const styleRes = await fetch(router.resolve('/slide.css'))
+            const styleTxt = await styleRes.text()
+
+            window.slideStyle = styleTxt
+            return styleTxt
+        }
+
+        async function listPage() {
+            const slideJson = await getSlides()
+
+            for (const slide of slideJson) {
+                const { id, title } = slide
+                const ul = document.getElementById('slide-list')
+
+                const li = document.createElement('li').with(it => {
+                    const a = document.createElement('a').with(it => {
+                        if (slide.external) {
+                            it.href = slide.external
+                        } else {
+                            it.href = `${id}`
+                        }
+                        it.textContent = title
+                    })
+                    it.appendChild(a)
+                })
+                ul.appendChild(li)
+            }
+        }
+
+        async function slidePage(id) {
+            const slideJson = await getSlides()
+            if (!slideJson) {
+                console.log('slideJson undefined')
+                router.current().element.textContent = 'Not Found'
+                return
+            }
+
+            const slide = slideJson.find(it => it.id == id)
+
+            if (!slide) {
+                console.log('id not match')
+                router.current().element.textContent = 'Not Found'
+                return
+            }
+
+            document.title = slide.title
+
+            const slideHtml = await getSlideHtml(slide)
+
+            const slideRoot = document.createElement('div').with(slideRoot => {
+                slideRoot.id = 'slide-root'
+                slideRoot.innerHTML = slideHtml
+            })
+
+            const pages = slideRoot.children
+            const currentPage = Number.parseInt(router.current().params.page) - 1
+            if (Number.isNaN(currentPage) || pages.length < currentPage) {
+                const id = router.current().params.id
+                router.redirect(`/${id}/1`)
+                return
+            }
+
+            router.current().element.appendChild(slideRoot)
+
+            document.getElementById('shadow').attachShadow({ mode: 'open' }).with(shadow => {
+                const page = pages[currentPage].cloneNode(true)
+                for (const el of Array.from(page.children)) {
+                    shadow.appendChild(el)
+                }
+
+                const link = document.createElement('style').with(async it => {
+                    it.textContent = await getSlideCss()
+                })
+                shadow.appendChild(link)
+            })
+
+            document.getElementById('next').with(it => {
+                it.addEventListener('touchstart', e => {
+                    e.preventDefault()
+                    nextSlide()
+                })
+                it.addEventListener('click', e => {
+                    e.stopPropagation()
+                    nextSlide()
+                }, {
+                    capture: true
+                })
+            })
+            document.getElementById('prev').with(it => {
+                it.addEventListener('touchstart', e => {
+                    e.preventDefault()
+                    prevSlide()
+                })
+                it.addEventListener('click', e => {
+                    e.stopPropagation()
+                    prevSlide()
+                }, {
+                    capture: true
+                })
+            })
+        }
+
+        function nextSlide() {
+            if (router.current().name != 'slide') return
+
+            const currentPage = Number.parseInt(router.current().params.page) - 1
+            const divs = document.querySelectorAll('#slide-root > div')
+            if (currentPage + 1 < divs.length) {
+                router.redirect(`/${router.current().params.id}/${currentPage + 2}`)
+            }
+        }
+
+        function prevSlide() {
+            if (router.current().name != 'slide') return
+
+            const currentPage = Number.parseInt(router.current().params.page) - 1
+            if (currentPage > 0) {
+                router.redirect(`/${router.current().params.id}/${currentPage}`)
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            nextSlide()
+        })
+
+        window.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'Enter':
+                case ' ':
+                case 'ArrowRight':
+                case 'ArrowDown': {
+                    nextSlide()
+                    break
+                }
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                case 'Backspace':
+                case 'Delete': {
+                    prevSlide()
+                    break
+                }
+            }
+        })
+
+        window.addEventListener('wheel', (e) => {
+            if (e.deltaY > 0) {
+                nextSlide()
+            } else if (e.deltaY < 0) {
+                prevSlide()
+            }
+        })
+
+        window.addEventListener('gamepadconnected', e => {
+            console.log('gamepadconnected')
+
+            window.gamepadIndex = e.gamepad.index
+
+            const gamePadLoop = (buttonPressed, stick, stickTime) => {
+                if (gamepadIndex == null) return
+
+                const gamepad = navigator.getGamepads()[gamepadIndex]
+                const { buttons, axes } = gamepad
+
+                let nextButtonPressed = false
+                if (buttons[0].pressed) {
+                    nextButtonPressed = true
+                    if (!buttonPressed) nextSlide()
+                } else if (buttons[2].pressed) {
+                    nextButtonPressed = true
+                    if (!buttonPressed) prevSlide()
+                }
+
+                let nextStick = false
+                const [ x, y ] = [ axes[0], axes[1] ]
+                if (x > 0.85) {
+                    nextStick = true
+                    if (!stick) prevSlide()
+                }
+                if (x < -0.85) {
+                    nextStick = true
+                    if (!stick) nextSlide()
+                }
+                if (y > 0.85) {
+                    nextStick = true
+                    if (!stick) nextSlide()
+                }
+                if (y < -0.85) {
+                    nextStick = true
+                    if (!stick) prevSlide()
+                }
+                if (!stick && nextStick) {
+                    stickTime = gamepad.timestamp
+                }
+
+                if (stickTime && stick && nextStick) {
+                    if (gamepad.timestamp - stickTime >= 300) nextStick = false
+                }
+
+                requestAnimationFrame(() => {
+                    gamePadLoop(nextButtonPressed, nextStick, stickTime)
+                })
+            }
+
+            gamePadLoop(false, false, 0)
+        })
+
+        window.addEventListener('gamepaddisconnected', e => {
+            console.log('gamepaddisconnected')
+            if (e.gamepad.index == gamepadIndex) gamepadIndex = null
+        })
+
+    </script>
+</body>
+</html>
