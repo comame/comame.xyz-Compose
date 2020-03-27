@@ -10,36 +10,6 @@ services:
       - ./home:/files:ro
     restart: always
 
-  pwa-tools:
-    image: comameito/static-server
-    volumes:
-      - ./pwa-tools:/files:ro
-    restart: always
-
-  assets:
-    image: comameito/static-server
-    volumes:
-      - ./assets:/files:ro
-    restart: always
-
-  js-lib:
-    image: comameito/static-server
-    volumes:
-      - ./js-lib:/files:ro
-    restart: always
-
-  static-pages:
-    image: comameito/static-server
-    volumes:
-      - ./static-pages:/files:ro
-    restart: always
-
-  dotfiles:
-    image: comameito/static-server
-    volumes:
-      - ./dotfiles:/files:ro
-    restart: always
-
   slides:
     image: comameito/index-server
     volumes:
