@@ -1,33 +1,3 @@
-[submodule "static-pages"]
-	path = static-pages
-	url = git@github.com:comame/comame.xyz-Static-Pages.git
-[submodule "pwa-tools"]
-	path = pwa-tools
-	url = git@github.com:comame/comame.xyz-PWA-Tools.git
-[submodule "js-lib"]
-	path = js-lib
-	url = git@github.com:comame/comame.xyz_JavaScript-Libraries.git
 [submodule "home"]
 	path = home
 	url = git@github.com:comame/comame.xyz.git
-[submodule "assets"]
-	path = assets
-	url = git@github.com:comame/comame.xyz_Private-Assets.git
-[submodule "nginx"]
-	path = nginx
-	url = git@github.com:comame/comame.xyz_Reverse-Proxy.git
-[submodule "gitlab-slackbot"]
-	path = gitlab-slackbot
-	url = git@github.com:comame/GitLab-Slackbot.git
-[submodule "shortlink"]
-	path = shortlink
-	url = git@github.com:comame/comame.xyz-Shortlink.git
-[submodule "dotfiles"]
-	path = dotfiles
-	url = git@github.com:comame/dotfiles.git
-[submodule "slides"]
-	path = slides
-	url = git@github.com:comame/Slides.git
-[submodule "blog"]
-	path = blog
-	url = git@github.com:comame/blog.comame.xyz.git
