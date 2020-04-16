@@ -7,7 +7,7 @@ const developmentCommon = {
         new CleanWebpackPlugin()
     ],
     resolve: {
-        extensions: [ '.ts', '.tsx' ]
+        extensions: [ '.ts', '.tsx', '.js' ]
     }
 }
 
