@@ -1,13 +1,12 @@
 import fs from 'fs'
 import { resolve } from 'path'
 
-const txt = fs.readFileSync(resolve(__dirname, '../../.env'), {
+export const dotenv: { [key: string]: string } = {}
+
+fs.readFileSync(resolve(__dirname, '../../.env'), {
     encoding: 'utf8'
-})
-
-const _dotenv = txt.split('\n').map(line => {
+}).split('\n').forEach(line => {
     const [ key, value ] = line.split('=')
-    return { [key]: value }
+    if (!key) return
+    dotenv[key] = value
 })
-
-export const dotenv = _dotenv as {}
