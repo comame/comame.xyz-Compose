@@ -1,3 +1,4 @@
+const { compilerOptions } = require('./tsconfig.json')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const developmentCommon = {
@@ -35,7 +36,12 @@ const frontend = {
             }]
         }, {
             test: /.(tsx|.ts)$/,
-            use: [ 'ts-loader' ]
+            use: [{
+                loader: 'ts-loader',
+                options: {
+                    compilerOptions
+                }
+            }]
         }, {
             test: /.html$/,
             use: [{

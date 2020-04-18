@@ -1,5 +1,4 @@
-import { IncomingMessage } from 'http'
-import { target } from './target'
+import https from 'https'
 
 export interface HTTPHeaders {
     [key: string]: string
@@ -11,20 +10,15 @@ export interface FetchOptions {
 }
 
 export async function fetch(url: string, option?: FetchOptions): Promise<Response> {
-    if (target == 'web') {
-        return (window as any).fetch(url, option)
-    }
-
-    const { request } = await import('https')
     return new Promise((resolve, reject) => {
-        const responseHandler = (res: IncomingMessage) => {
+        const req = https.request(url, option ?? {}, (res) => {
             let responseText = ''
 
-            res.on('data', (chunk: Buffer | string) => {
+            res.on('data', (chunk: Uint8Array | string) => {
                 if (typeof chunk == 'string') {
                     responseText += chunk
                 } else {
-                    responseText += chunk.toString('utf8')
+                    responseText += new TextDecoder('utf-8').decode(chunk)
                 }
             })
 
@@ -47,9 +41,7 @@ export async function fetch(url: string, option?: FetchOptions): Promise<Respons
                     responseText
                 ))
             })
-        }
-
-        const req = option ? request(url, option, responseHandler) : request(url, responseHandler)
+        })
 
         req.on('error', (err) => {
             reject(err)
