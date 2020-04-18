@@ -34,7 +34,7 @@ const frontend = {
                 }
             }]
         }, {
-            test: /.tsx$/,
+            test: /.(tsx|.ts)$/,
             use: [ 'ts-loader' ]
         }, {
             test: /.html$/,

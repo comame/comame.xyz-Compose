@@ -1,16 +1,21 @@
-import { request } from 'https'
 import { IncomingMessage } from 'http'
+import { target } from './target'
 
-interface HTTPHeaders {
+export interface HTTPHeaders {
     [key: string]: string
 }
 
-interface FetchOptions {
+export interface FetchOptions {
     method?: 'GET'
     headers?: HTTPHeaders
 }
 
 export async function fetch(url: string, option?: FetchOptions): Promise<Response> {
+    if (target == 'web') {
+        return (window as any).fetch(url, option)
+    }
+
+    const { request } = await import('https')
     return new Promise((resolve, reject) => {
         const responseHandler = (res: IncomingMessage) => {
             let responseText = ''
