@@ -1,11 +1,15 @@
 const { compilerOptions } = require('./tsconfig.json')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const { DefinePlugin } = require('webpack')
 
 const developmentCommon = {
     mode: 'development',
     devtool: 'inline-source-map',
     plugins: [
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
+        new DefinePlugin({
+            'process.env.NODE_ENV': '"development"'
+        })
     ],
     resolve: {
         extensions: [ '.ts', '.tsx', '.js' ]
@@ -13,6 +17,7 @@ const developmentCommon = {
 }
 
 const frontend = {
+    name: 'frontend',
     entry: './src/front/app.tsx',
     output: {
         filename: 'app.js',
@@ -50,11 +55,20 @@ const frontend = {
                     name: '[name].html'
                 }
             }]
+        }, {
+            test: /assets\//,
+            use: [{
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]'
+                }
+            }]
         }]
     }
 }
 
 const server = {
+    name: 'server',
     target: 'node',
     node: {
         __dirname: false

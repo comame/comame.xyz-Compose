@@ -3,7 +3,7 @@ import { Thumbnails } from './Thumbnails'
 export interface ActivitiesAPIOptions {
     part: Array<'id'|'snippet'|'contentDetails'>
     channelId: string
-    maxResults: number
+    maxResults?: number
     key?: string
 }
 
@@ -17,6 +17,10 @@ export interface ActivitiesAPIResponse {
         resultsPerPage: number
     }
     items: Activity[]
+}
+
+export function isActivitiesAPIResponse(arg: any): arg is ActivitiesAPIResponse {
+    return typeof arg == 'object' && arg.kind == 'youtube#activityListResponse'
 }
 
 export interface Activity {
@@ -37,4 +41,8 @@ export interface Activity {
             videoId: string
         }
     }
+}
+
+export function isActivity(arg: Activity): arg is Activity {
+    return typeof arg == 'object' && arg.kind == 'youtube#activity'
 }

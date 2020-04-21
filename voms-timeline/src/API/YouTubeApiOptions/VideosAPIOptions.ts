@@ -1,4 +1,4 @@
-import { Thumbnails } from "./Thumbnails";
+import { Thumbnails } from './Thumbnails'
 
 export interface VideoAPIOptions {
     part: Array<'id'|'snippet'|'contentDetails'|'liveStreamingDetails'|'player'|'status'>
@@ -38,7 +38,7 @@ export interface Video {
         embedHtml: string
     }
     liveStreamingDetails?: {
-        actualStartTime: Date
+        actualStartTime?: Date
         scheduledStartTime: Date
     }
 }
