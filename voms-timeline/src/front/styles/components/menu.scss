@@ -1,0 +1,60 @@
+.Menu {
+    display: inline-block;
+
+    overflow-y: hidden;
+    z-index: 1;
+
+    input {
+        display: none;
+    }
+
+    label {
+        display: block;
+        line-height: 2rem;
+        height: 2rem;
+
+        margin-bottom: .5rem;
+        margin-left: 2rem;
+
+        .checked, .unchecked {
+            vertical-align: middle;
+            display: inline-block;
+            height: 2rem;
+            width: 2rem;
+
+            &.checked {
+                mask: url('./checkbox.svg') no-repeat center;
+                -webkit-mask: url('./checkbox.svg') no-repeat center;
+            }
+            &.unchecked {
+                mask: url('./checkbox_blank.svg') no-repeat center;
+                -webkit-mask: url('./checkbox_blank.svg') no-repeat center;
+            }
+        }
+
+        &:nth-child(1) {
+            .checked, .unchecked {
+                background-color: var(--color-pikamee);
+            }
+        }
+        &:nth-child(2) {
+            .checked, .unchecked {
+                background-color: var(--color-tomoshika);
+            }
+        }
+        &:nth-child(3) {
+            .checked, .unchecked {
+                background-color: var(--color-jitomi);
+            }
+        }
+
+        input:checked ~ .unchecked {
+            display: none;
+        }
+
+        input:not(:checked) ~ .checked {
+            display: none;
+        }
+
+    }
+}

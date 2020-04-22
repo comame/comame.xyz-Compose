@@ -1,8 +1,22 @@
+@import './components/header.scss';
+@import './components/contents.scss';
+@import './components/menu.scss';
 @import './components/clock.scss';
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
 
+* {
+    box-sizing: border-box;
+    font-family: 'Noto Sans JP';
+}
+
 body {
     margin: 0;
-    font-family: 'Noto Sans JP';
+}
+
+
+:root {
+    --color-tomoshika: #ff807f;
+    --color-pikamee: #ffb900;
+    --color-jitomi: #3e4e65;
 }

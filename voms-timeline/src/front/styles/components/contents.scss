@@ -1,0 +1,15 @@
+.Contents {
+    display: grid;
+
+    &.isMenuOpen {
+        grid-template-columns: 20rem 1fr;
+    }
+    &:not(.isMenuOpen) {
+        grid-template-columns: 1px 1fr;
+    }
+
+    & > * {
+        height: calc(100vh - 4rem);
+        overflow-y: scroll;
+    }
+}

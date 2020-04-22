@@ -1,7 +1,8 @@
-export interface Thumbnails {
+export type Thumbnails = {
     default: Thumbnail
     medium: Thumbnail
     high: Thumbnail
+    [ key: string ]: Thumbnail
 }
 
 interface Thumbnail {
