@@ -1,0 +1,19 @@
+.MenuCloser {
+    @media screen and (min-width: 600px) {
+        display: none !important;
+    }
+
+    .isMenuOpen & {
+        display: block;
+    }
+
+    display: none;
+
+    background: rgba(0, 0, 0, .6);
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+}

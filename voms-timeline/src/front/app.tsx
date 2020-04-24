@@ -11,10 +11,12 @@ import { useMenu } from './hooks/useMenu'
 
 import { Header } from './components/header'
 import { Menu } from './components/menu'
+import { Main } from './components/main'
+import { MenuCloser } from './components/menu-closer'
 
 function App() {
     const { filter, setFilter } = useChannelFilter(Object.keys(channels).map(name => (channels as any)[name]))
-    const { isMenuOpen, toggleMenu } = useMenu()
+    const { isMenuOpen, toggleMenu } = useMenu(false)
 
     const contentsClassList: string[] = [
         'Contents',
@@ -30,7 +32,8 @@ function App() {
                 channelFilter={ filter }
                 setChannelFilter={ setFilter }
             />
-            <div><div style={{ height: 150 + 'vh'}}>Placeholder Content</div></div>
+            <Main />
+            <MenuCloser toggleMenu={ toggleMenu } />
         </div>
     </>
 }

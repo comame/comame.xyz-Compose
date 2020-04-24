@@ -1,8 +1,11 @@
 .Menu {
-    display: inline-block;
+    background: white;
 
-    overflow-y: hidden;
-    z-index: 1;
+    overflow-y: scroll;
+    z-index: 100;
+
+    box-shadow: none;
+    padding-top: 1rem;
 
     input {
         display: none;
@@ -14,7 +17,6 @@
         height: 2rem;
 
         margin-bottom: .5rem;
-        margin-left: 2rem;
 
         .checked, .unchecked {
             vertical-align: middle;

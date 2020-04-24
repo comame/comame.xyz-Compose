@@ -1,12 +1,38 @@
 .Contents {
-    display: grid;
+    // Desktop
+    @media screen and (min-width: 600px) {
+        display: grid;
+        column-gap: 2rem;
 
-    &.isMenuOpen {
-        grid-template-columns: 20rem 1fr;
+        &.isMenuOpen {
+            grid-template-columns: 15rem 1fr;
+        }
+        &:not(.isMenuOpen) {
+            grid-template-columns: 0 1fr;
+        }
     }
-    &:not(.isMenuOpen) {
-        grid-template-columns: 1px 1fr;
+
+    // Mobile
+    @media screen and (max-width: 600px) {
+        .Menu {
+            position: fixed;
+            top: 4rem;
+            width: 60vw;
+            padding-left: 2rem;
+
+            transition: left .1s ease-out;
+        }
+
+        &.isMenuOpen .Menu {
+            left: 0vw;
+        }
+        &:not(.isMenuOpen) .Menu {
+            left: -60vw;
+        }
     }
+
+    margin-right: 2rem;
+    margin-left: 2rem;
 
     & > * {
         height: calc(100vh - 4rem);
