@@ -30,6 +30,7 @@ export interface Video {
         description: string
         thumbnails: Thumbnails
         channelTitle: string
+        liveBroadcastContent?: 'live'|'none'|'upcoming'
     }
     contentDetails?: {
         duration: string
@@ -39,6 +40,7 @@ export interface Video {
     }
     liveStreamingDetails?: {
         actualStartTime?: Date
+        actualEndTime?: Date
         scheduledStartTime: Date
     }
 }

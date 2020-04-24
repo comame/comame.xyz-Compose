@@ -1,0 +1,64 @@
+.VideoList {
+    @media screen and (min-width: 28rem) {
+        ul {
+            justify-content: start;
+        }
+
+        li {
+            width: 10rem;
+        }
+
+        img {
+            width: 10rem;
+            height: calc(10rem * 9 / 16);
+            object-fit: cover;
+        }
+    }
+
+    @media screen and (max-width: 28rem) {
+        ul {
+            justify-content: center;
+        }
+
+        li {
+            width: 100%;
+        }
+
+        img {
+            width: 100%;
+            height: calc((100% - 1rem) * 9 / 16);
+            object-fit: cover;
+        }
+    }
+
+    ul {
+        padding-left: 0;
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    li {
+        list-style: none;
+        margin: 1rem;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    h3 {
+        font-weight: normal;
+        font-size: 1rem;
+        line-height: 1.2rem;
+        height: 2.4rem;
+        overflow-y: hidden;
+        margin-top: .5rem;
+        margin-bottom: .5rem;
+    }
+
+    p {
+        margin-top: .5rem;
+        margin-bottom: .5rem;
+    }
+}

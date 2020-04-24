@@ -11,7 +11,7 @@ import { useMenu } from './hooks/useMenu'
 
 import { Header } from './components/header'
 import { Menu } from './components/menu'
-import { Main } from './components/main'
+import { Timeline } from './components/timeline'
 import { MenuCloser } from './components/menu-closer'
 
 function App() {
@@ -32,7 +32,7 @@ function App() {
                 channelFilter={ filter }
                 setChannelFilter={ setFilter }
             />
-            <Main />
+            <Timeline filter={ filter } />
             <MenuCloser toggleMenu={ toggleMenu } />
         </div>
     </>

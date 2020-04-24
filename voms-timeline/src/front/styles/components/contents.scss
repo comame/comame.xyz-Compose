@@ -2,12 +2,13 @@
     // Desktop
     @media screen and (min-width: 600px) {
         display: grid;
-        column-gap: 2rem;
 
         &.isMenuOpen {
+            column-gap: 2rem;
             grid-template-columns: 15rem 1fr;
         }
         &:not(.isMenuOpen) {
+            column-gap: 0;
             grid-template-columns: 0 1fr;
         }
     }
