@@ -21,7 +21,7 @@ app.all('/sub/hook', async (req, res) => {
     res.send(challenge)
 })
 app.get('/sub/logs', async (req, res) => {
-    const data = await db.collection('subs-log').find().sort({ time: 1 }).toArray()
+    const data = await db.collection('subs-log').find().sort({ time: -1 }).toArray()
     res.send(JSON.stringify(data, void 0, 2))
 })
 

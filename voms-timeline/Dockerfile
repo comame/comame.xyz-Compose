@@ -5,4 +5,4 @@ WORKDIR /home/node/app
 
 RUN npm i --production
 
-CMD npx nodemon dist/server/app.js
+CMD node dist/server/app.js
