@@ -9,13 +9,16 @@ let db: mongodb.Db
 
 app.get('**', express.static(path.resolve(__dirname, '../front')))
 app.all('/sub/hook', async (req, res) => {
+    const queryStr = req.originalUrl.split('?')[1]
+    const challenge = queryStr.split('&').find(it => it.startsWith('hub.challenge='))?.slice('hub.challenge='.length)
+
     await db.collection('subs-log').insertOne({ time: Date.now(), req: {
         url: req.originalUrl,
         method: req.method,
         body: req.body,
         headers: req.headers,
     } })
-    res.send('ok')
+    res.send(challenge)
 })
 app.get('/sub/logs', async (req, res) => {
     const data = await db.collection('subs-log').find().sort({ time: 1 }).toArray()

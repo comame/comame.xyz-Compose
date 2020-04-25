@@ -4,12 +4,9 @@ const { DefinePlugin } = require('webpack')
 
 const developmentCommon = {
     mode: 'development',
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     plugins: [
-        new CleanWebpackPlugin(),
-        new DefinePlugin({
-            'process.env.NODE_ENV': '"development"'
-        })
+        new CleanWebpackPlugin()
     ],
     resolve: {
         extensions: [ '.ts', '.tsx', '.js' ]
