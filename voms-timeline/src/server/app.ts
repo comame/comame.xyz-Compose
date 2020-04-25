@@ -10,9 +10,10 @@ let db: mongodb.Db
 app.get('**', express.static(path.resolve(__dirname, '../front')))
 app.all('/sub/hook', async (req, res) => {
     await db.collection('subs-log').insertOne({ time: Date.now(), req: {
+        url: req.originalUrl,
         method: req.method,
         body: req.body,
-        headers: req.headers
+        headers: req.headers,
     } })
     res.send('ok')
 })
