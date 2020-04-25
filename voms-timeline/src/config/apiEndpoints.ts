@@ -5,7 +5,5 @@ export const youtube = {
 }
 
 export const self = {
-    search: 'https://voms-timeline.comame.xyz/api/youtube/search',
-    activities: 'https://voms-timeline.comame.com/api/youtube/activities',
-    videos: 'https://voms-timeline.comame.xyz/api/youtube/videos'
+    videos: '/api/videos'
 }

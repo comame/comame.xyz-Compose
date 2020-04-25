@@ -61,4 +61,24 @@
         margin-top: .5rem;
         margin-bottom: .5rem;
     }
+
+    p::before {
+        content: '';
+        display: inline-block;
+        margin-right: .5rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 1rem;
+        vertical-align: middle;
+    }
+
+    .UCajhBT4nMrg3DLS-bLL2RCg p::before {
+        background: var(--color-pikamee);
+    }
+    .UC3vzVK_N_SUVKqbX69L_X4g p::before {
+        background: var(--color-tomoshika);
+    }
+    .UCaFhsCKSSS821N-EcWmPkUQ p::before {
+        background: var(--color-jitomi);
+    }
 }

@@ -1,4 +1,5 @@
 import { Thumbnails } from './Thumbnails'
+import { DateString } from '../../util/DateString';
 
 export interface SearchAPIOptions {
     part: Array<'id'|'snippet'>
@@ -30,7 +31,7 @@ export interface SearchResult {
         videoId?: string
     }
     snippet?: {
-        publishedAt: Date
+        publishedAt: DateString
         channelId: string
         title: string
         description: string

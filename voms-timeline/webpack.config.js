@@ -84,6 +84,10 @@ const server = {
             test: /.ts$/,
             use: [ 'ts-loader' ]
         }]
+    },
+    externals: {
+        express: 'commonjs express',
+        mongodb: 'commonjs2 mongodb'
     }
 }
 

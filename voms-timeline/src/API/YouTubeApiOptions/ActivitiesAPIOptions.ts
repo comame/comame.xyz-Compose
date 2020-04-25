@@ -1,4 +1,5 @@
 import { Thumbnails } from './Thumbnails'
+import { DateString } from '../../util/DateString'
 
 export interface ActivitiesAPIOptions {
     part: Array<'id'|'snippet'|'contentDetails'>
@@ -28,7 +29,7 @@ export interface Activity {
     etag: string
     id?: string
     snippet?: {
-        publishedAt: Date
+        publishedAt: DateString
         channelId: string
         title: string
         description: string

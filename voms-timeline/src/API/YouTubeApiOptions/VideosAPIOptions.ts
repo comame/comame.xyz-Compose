@@ -1,4 +1,5 @@
 import { Thumbnails } from './Thumbnails'
+import { DateString } from '../../util/DateString';
 
 export interface VideoAPIOptions {
     part: Array<'id'|'snippet'|'contentDetails'|'liveStreamingDetails'|'player'|'status'>
@@ -24,7 +25,7 @@ export interface Video {
     etag: string
     id: string
     snippet?: {
-        publishedAt: Date
+        publishedAt: DateString
         channelId: string
         title: string
         description: string
@@ -39,8 +40,8 @@ export interface Video {
         embedHtml: string
     }
     liveStreamingDetails?: {
-        actualStartTime?: Date
-        actualEndTime?: Date
-        scheduledStartTime: Date
+        actualStartTime?: DateString
+        actualEndTime?: DateString
+        scheduledStartTime: DateString
     }
 }
