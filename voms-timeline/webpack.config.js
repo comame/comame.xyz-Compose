@@ -84,7 +84,8 @@ const server = {
     },
     externals: {
         express: 'commonjs express',
-        mongodb: 'commonjs2 mongodb'
+        mongodb: 'commonjs2 mongodb',
+        'body-parser': 'commonjs body-parser'
     }
 }
 
