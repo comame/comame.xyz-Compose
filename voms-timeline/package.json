@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "fast-xml-parser": "^3.16.0",
     "mongodb": "^3.5.6"
   }
 }

@@ -101,10 +101,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(__webpack_require__(/*! express */ "express"));
 const mongodb_1 = __importDefault(__webpack_require__(/*! mongodb */ "mongodb"));
+const fast_xml_parser_1 = __webpack_require__(/*! fast-xml-parser */ "fast-xml-parser");
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const MongoClient = mongodb_1.default.MongoClient;
 const app = express_1.default();
 let db;
+// Parse body as string
 app.use((req, res, next) => {
     let bodyText = '';
     req.on('data', (chunk) => {
@@ -117,20 +119,25 @@ app.use((req, res, next) => {
     });
     req.on('end', () => {
         req.body = bodyText;
-        console.log('REQUEST BODY', bodyText);
         next();
     });
 });
 app.get('**', express_1.default.static(path_1.default.resolve(__dirname, '../front')));
 app.all('/sub/hook', async (req, res) => {
     var _a;
-    console.log('/sub/hook');
     const queryStr = req.originalUrl.split('?')[1];
     const challenge = (_a = queryStr === null || queryStr === void 0 ? void 0 : queryStr.split('&').find(it => it.startsWith('hub.challenge='))) === null || _a === void 0 ? void 0 : _a.slice('hub.challenge='.length);
+    if (fast_xml_parser_1.validate(req.body) !== true) {
+        const error = fast_xml_parser_1.validate(req.body);
+        console.error('VALIDATE ERROR', error);
+        res.status(500).send('error');
+        return;
+    }
+    const subscribeObject = fast_xml_parser_1.parse(req.body);
     await db.collection('subs-log').insertOne({ time: Date.now(), req: {
             url: req.originalUrl,
             method: req.method,
-            body: req.body,
+            body: subscribeObject,
             headers: req.headers,
         } });
     res.send(challenge !== null && challenge !== void 0 ? challenge : 'ok');
@@ -159,6 +166,17 @@ MongoClient.connect('mongodb://mongo:27017', { useUnifiedTopology: true }, (err,
 /***/ (function(module, exports) {
 
 module.exports = require("express");
+
+/***/ }),
+
+/***/ "fast-xml-parser":
+/*!**********************************!*\
+  !*** external "fast-xml-parser" ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("fast-xml-parser");
 
 /***/ }),
 
