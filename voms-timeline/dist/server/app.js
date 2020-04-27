@@ -101,15 +101,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(__webpack_require__(/*! express */ "express"));
 const mongodb_1 = __importDefault(__webpack_require__(/*! mongodb */ "mongodb"));
-const body_parser_1 = __importDefault(__webpack_require__(/*! body-parser */ "body-parser"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const MongoClient = mongodb_1.default.MongoClient;
 const app = express_1.default();
 let db;
-app.use(body_parser_1.default.text());
+app.use((req, res, next) => {
+    let bodyText = '';
+    req.on('data', (chunk) => {
+        if (typeof chunk == 'string') {
+            bodyText += chunk;
+        }
+        else {
+            bodyText += chunk.toString('utf8');
+        }
+    });
+    req.on('end', () => {
+        req.body = bodyText;
+        console.log('REQUEST BODY', bodyText);
+        next();
+    });
+});
 app.get('**', express_1.default.static(path_1.default.resolve(__dirname, '../front')));
 app.all('/sub/hook', async (req, res) => {
     var _a;
+    console.log('/sub/hook');
     const queryStr = req.originalUrl.split('?')[1];
     const challenge = (_a = queryStr === null || queryStr === void 0 ? void 0 : queryStr.split('&').find(it => it.startsWith('hub.challenge='))) === null || _a === void 0 ? void 0 : _a.slice('hub.challenge='.length);
     await db.collection('subs-log').insertOne({ time: Date.now(), req: {
@@ -133,17 +148,6 @@ MongoClient.connect('mongodb://mongo:27017', { useUnifiedTopology: true }, (err,
     });
 });
 
-
-/***/ }),
-
-/***/ "body-parser":
-/*!******************************!*\
-  !*** external "body-parser" ***!
-  \******************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("body-parser");
 
 /***/ }),
 

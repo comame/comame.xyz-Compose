@@ -1,6 +1,5 @@
 import express from 'express'
 import mongodb from 'mongodb'
-import bodyParser from 'body-parser'
 import path from 'path'
 
 const MongoClient = mongodb.MongoClient
@@ -8,11 +7,25 @@ const MongoClient = mongodb.MongoClient
 const app = express()
 let db: mongodb.Db
 
-app.use(bodyParser.text())
+app.use((req, res, next) => {
+    let bodyText = ''
+    req.on('data', (chunk: Buffer|string) => {
+        if (typeof chunk == 'string') {
+            bodyText += chunk
+        } else {
+            bodyText += chunk.toString('utf8')
+        }
+    })
+    req.on('end', () => {
+        req.body = bodyText
+        console.log('REQUEST BODY', bodyText)
+        next()
+    })
+})
 
 app.get('**', express.static(path.resolve(__dirname, '../front')))
 app.all('/sub/hook', async (req, res) => {
-
+    console.log('/sub/hook')
     const queryStr = req.originalUrl.split('?')[1]
     const challenge = queryStr?.split('&').find(it => it.startsWith('hub.challenge='))?.slice('hub.challenge='.length)
 
