@@ -8,9 +8,10 @@ const MongoClient = mongodb.MongoClient
 const app = express()
 let db: mongodb.Db
 
+app.use(bodyParser.text())
+
 app.get('**', express.static(path.resolve(__dirname, '../front')))
 app.all('/sub/hook', async (req, res) => {
-    bodyParser.text()(req, res, () => {})
 
     const queryStr = req.originalUrl.split('?')[1]
     const challenge = queryStr?.split('&').find(it => it.startsWith('hub.challenge='))?.slice('hub.challenge='.length)
