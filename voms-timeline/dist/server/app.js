@@ -124,9 +124,36 @@ app.use((req, res, next) => {
 });
 app.get('**', express_1.default.static(path_1.default.resolve(__dirname, '../front')));
 app.all('/sub/hook', async (req, res) => {
-    var _a;
-    const queryStr = req.originalUrl.split('?')[1];
-    const challenge = (_a = queryStr === null || queryStr === void 0 ? void 0 : queryStr.split('&').find(it => it.startsWith('hub.challenge='))) === null || _a === void 0 ? void 0 : _a.slice('hub.challenge='.length);
+    var _a, _b, _c;
+    const queryObj = Object.fromEntries((_b = (_a = req.originalUrl.split('?')[1]) === null || _a === void 0 ? void 0 : _a.split('&').map(it => it.split('='))) !== null && _b !== void 0 ? _b : []);
+    const logRequest = async ({ queryObj, subscribeObject }) => {
+        await db.collection('subs-log').insertOne({ time: Date.now(), req: {
+                url: req.originalUrl,
+                query: Object.fromEntries(Object.entries(queryObj !== null && queryObj !== void 0 ? queryObj : {}).map(it => {
+                    return [it[0].replace(/\./g, '_'), it[1]];
+                })),
+                method: req.method,
+                body: subscribeObject,
+                headers: req.headers,
+            } });
+    };
+    if (queryObj['hub.mode'] == 'subscribe') {
+        const challenge = queryObj['hub.challenge'];
+        // res.send(challenge)
+        console.log('challenge', challenge);
+        res.sendStatus(404);
+        await logRequest({ queryObj });
+        return;
+    }
+    else if (queryObj['hub.mode'] == 'unsubscribe') {
+        res.sendStatus(404);
+        return;
+    }
+    else if (queryObj['hub.mode'] == 'denied') {
+        await logRequest({ queryObj });
+        res.send();
+        return;
+    }
     if (fast_xml_parser_1.validate(req.body) !== true) {
         const error = fast_xml_parser_1.validate(req.body);
         console.error('VALIDATE ERROR', error);
@@ -134,16 +161,13 @@ app.all('/sub/hook', async (req, res) => {
         return;
     }
     const subscribeObject = fast_xml_parser_1.parse(req.body);
-    await db.collection('subs-log').insertOne({ time: Date.now(), req: {
-            url: req.originalUrl,
-            method: req.method,
-            body: subscribeObject,
-            headers: req.headers,
-        } });
-    res.send(challenge !== null && challenge !== void 0 ? challenge : 'ok');
+    const updatedVideoId = (_c = subscribeObject.entry) === null || _c === void 0 ? void 0 : _c['yt:videoId'];
+    console.log('UpdatedVideoId', updatedVideoId);
+    await logRequest({ subscribeObject });
+    res.send('ok');
 });
 app.get('/sub/logs', async (req, res) => {
-    const data = await db.collection('subs-log').find().sort({ time: -1 }).toArray();
+    const data = await db.collection('subs-log').find().sort({ time: -1 }).limit(100).toArray();
     res.send(JSON.stringify(data, void 0, 2));
 });
 MongoClient.connect('mongodb://mongo:27017', { useUnifiedTopology: true }, (err, client) => {
