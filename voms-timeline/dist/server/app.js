@@ -147,7 +147,7 @@ app.get('**', express_1.default.static(path_1.default.resolve(__dirname, '../fro
 app.all('/sub/hook', async (req, res) => {
     var _a, _b, _c;
     const queryObj = Object.fromEntries((_b = (_a = req.originalUrl.split('?')[1]) === null || _a === void 0 ? void 0 : _a.split('&').map(it => it.split('='))) !== null && _b !== void 0 ? _b : []);
-    const logRequest = async ({ queryObj, subscribeObject, result }) => {
+    const logRequest = async ({ queryObj, subscribeObject, result, rawBody = '' }) => {
         await db.collection('subs-log').insertOne({ time: Date.now(), req: {
                 url: req.originalUrl,
                 query: Object.fromEntries(Object.entries(queryObj !== null && queryObj !== void 0 ? queryObj : {}).map(it => {
@@ -156,7 +156,8 @@ app.all('/sub/hook', async (req, res) => {
                 method: req.method,
                 body: subscribeObject,
                 headers: req.headers,
-                result
+                result,
+                rawBody
             } });
     };
     if (queryObj['hub.mode'] == 'subscribe') {
@@ -189,14 +190,14 @@ app.all('/sub/hook', async (req, res) => {
         const error = fast_xml_parser_1.validate(req.body);
         console.error('VALIDATE ERROR', error);
         res.status(500).send('error');
-        await logRequest({ subscribeObject: req.body, result: 500 });
+        await logRequest({ subscribeObject: req.body, result: 500, rawBody: req.body });
         return;
     }
     res.send('ok');
     const subscribeObject = fast_xml_parser_1.parse(req.body);
     const updatedVideoId = (_c = subscribeObject.entry) === null || _c === void 0 ? void 0 : _c['yt:videoId'];
     console.log('UpdatedVideoId', updatedVideoId);
-    await logRequest({ subscribeObject, result: 200 });
+    await logRequest({ subscribeObject, result: 200, rawBody: req.body });
 });
 // @ts-ignore: req unused
 app.get('/sub/logs', async (req, res) => {
