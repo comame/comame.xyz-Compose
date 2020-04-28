@@ -42,8 +42,7 @@ app.all('/sub/hook', async (req, res) => {
 
     if (queryObj['hub.mode'] == 'subscribe') {
         const challenge = queryObj['hub.challenge']
-        // res.send(challenge)
-        console.log('challenge', challenge); res.sendStatus(404)
+        res.send(challenge)
         await logRequest({ queryObj })
         return
     } else if (queryObj['hub.mode'] == 'unsubscribe') {
