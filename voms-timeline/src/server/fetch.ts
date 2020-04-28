@@ -53,7 +53,7 @@ export async function fetch(url: string, option?: FetchOptions): Promise<Respons
 
 export class Response {
     public ok: boolean
-    public json: () => Promise<string>
+    public json: () => Promise<{}>
     public text: () => Promise<string>
 
     constructor(
