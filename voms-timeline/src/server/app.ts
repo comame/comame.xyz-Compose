@@ -89,7 +89,6 @@ app.all('/sub/hook', async (req, res) => {
     const hmacKey = dotenv.WEBSUB_HUB_SECRET
     const hmacDigest = crypto.createHmac('sha1', hmacKey).update(req.body).digest('hex')
     const requestedHmacDigest = req.header('x-hub-signature')?.slice('sha1='.length)
-    console.log(hmacDigest, requestedHmacDigest)
 
     if (hmacDigest != requestedHmacDigest) {
         console.error('Invalid digest request')
@@ -103,7 +102,6 @@ app.all('/sub/hook', async (req, res) => {
     const subscribeObject = parseXml(req.body)
 
     const updatedVideoId = subscribeObject.feed?.entry?.['yt:videoId'] as string | undefined
-    console.log('UpdatedVideoId', updatedVideoId)
 
     await logRequest({ subscribeObject, result: 200, rawBody: req.body })
 })

@@ -100,7 +100,6 @@ exports.channels = {
     '天野ピカミィ': 'UCajhBT4nMrg3DLS-bLL2RCg',
     '緋笠トモシカ': 'UC3vzVK_N_SUVKqbX69L_X4g',
     '磁富モノエ': 'UCaFhsCKSSS821N-EcWmPkUQ',
-    comame: 'UC7pZiSyELnd19GQj3lZ0x1g',
 };
 
 
@@ -199,7 +198,6 @@ app.all('/sub/hook', async (req, res) => {
     const hmacKey = dotenv_1.dotenv.WEBSUB_HUB_SECRET;
     const hmacDigest = crypto_1.default.createHmac('sha1', hmacKey).update(req.body).digest('hex');
     const requestedHmacDigest = (_c = req.header('x-hub-signature')) === null || _c === void 0 ? void 0 : _c.slice('sha1='.length);
-    console.log(hmacDigest, requestedHmacDigest);
     if (hmacDigest != requestedHmacDigest) {
         console.error('Invalid digest request');
         res.send('ok');
@@ -209,7 +207,6 @@ app.all('/sub/hook', async (req, res) => {
     res.send('ok');
     const subscribeObject = fast_xml_parser_1.parse(req.body);
     const updatedVideoId = (_e = (_d = subscribeObject.feed) === null || _d === void 0 ? void 0 : _d.entry) === null || _e === void 0 ? void 0 : _e['yt:videoId'];
-    console.log('UpdatedVideoId', updatedVideoId);
     await logRequest({ subscribeObject, result: 200, rawBody: req.body });
 });
 // @ts-ignore: req unused
