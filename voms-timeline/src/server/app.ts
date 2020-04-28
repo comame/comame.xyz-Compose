@@ -61,8 +61,8 @@ app.all('/sub/hook', async (req, res) => {
         res.sendStatus(404)
         return
     } else if (queryObj['hub.mode'] == 'denied') {
-        await logRequest({ queryObj })
         res.send()
+        await logRequest({ queryObj })
         return
     }
 
@@ -70,8 +70,11 @@ app.all('/sub/hook', async (req, res) => {
         const error = validateXml(req.body)
         console.error('VALIDATE ERROR', error)
         res.status(500).send('error')
+        await logRequest({ subscribeObject: req.body })
         return
     }
+
+    res.send('ok')
 
     const subscribeObject = parseXml(req.body)
 
@@ -79,8 +82,6 @@ app.all('/sub/hook', async (req, res) => {
     console.log('UpdatedVideoId', updatedVideoId)
 
     await logRequest({ subscribeObject })
-
-    res.send('ok')
 })
 
 app.get('/sub/logs', async (req, res) => {

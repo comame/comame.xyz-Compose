@@ -177,21 +177,22 @@ app.all('/sub/hook', async (req, res) => {
         return;
     }
     else if (queryObj['hub.mode'] == 'denied') {
-        await logRequest({ queryObj });
         res.send();
+        await logRequest({ queryObj });
         return;
     }
     if (fast_xml_parser_1.validate(req.body) !== true) {
         const error = fast_xml_parser_1.validate(req.body);
         console.error('VALIDATE ERROR', error);
         res.status(500).send('error');
+        await logRequest({ subscribeObject: req.body });
         return;
     }
+    res.send('ok');
     const subscribeObject = fast_xml_parser_1.parse(req.body);
     const updatedVideoId = (_c = subscribeObject.entry) === null || _c === void 0 ? void 0 : _c['yt:videoId'];
     console.log('UpdatedVideoId', updatedVideoId);
     await logRequest({ subscribeObject });
-    res.send('ok');
 });
 app.get('/sub/logs', async (req, res) => {
     const data = await db.collection('subs-log').find().sort({ time: -1 }).limit(100).toArray();
