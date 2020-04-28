@@ -10,6 +10,7 @@ const app = express()
 let db: mongodb.Db
 
 // Parse body as string
+// @ts-ignore: req unused
 app.use((req, res, next) => {
     let bodyText = ''
     req.on('data', (chunk: Buffer|string) => {
@@ -27,9 +28,14 @@ app.use((req, res, next) => {
 
 app.get('**', express.static(path.resolve(__dirname, '../front')))
 app.all('/sub/hook', async (req, res) => {
+
     const queryObj = Object.fromEntries(req.originalUrl.split('?')[1]?.split('&').map(it => it.split('=')) ?? [])
 
-    const logRequest = async ( { queryObj, subscribeObject }: { queryObj?: object, subscribeObject?: object }) => {
+    const logRequest = async ( { queryObj, subscribeObject, result }: {
+        queryObj?: object,
+        subscribeObject?: object,
+        result: number
+    }) => {
         await db.collection('subs-log').insertOne({ time: Date.now(), req: {
             url: req.originalUrl,
             query: Object.fromEntries(Object.entries(queryObj ?? {}).map(it => {
@@ -38,6 +44,7 @@ app.all('/sub/hook', async (req, res) => {
             method: req.method,
             body: subscribeObject,
             headers: req.headers,
+            result
         } })
     }
 
@@ -51,18 +58,20 @@ app.all('/sub/hook', async (req, res) => {
 
         if (!acceptTopics.includes(queryObj['hub.topic'])) {
             res.sendStatus(404)
+            await logRequest({ queryObj, result: 404 })
         } else {
             const challenge = queryObj['hub.challenge']
             res.send(challenge)
+            await logRequest({ queryObj, result: 200 })
         }
-        await logRequest({ queryObj })
         return
     } else if (queryObj['hub.mode'] == 'unsubscribe') {
         res.sendStatus(404)
+        await logRequest({ queryObj, result: 404 })
         return
     } else if (queryObj['hub.mode'] == 'denied') {
         res.send()
-        await logRequest({ queryObj })
+        await logRequest({ queryObj, result: 200 })
         return
     }
 
@@ -70,7 +79,7 @@ app.all('/sub/hook', async (req, res) => {
         const error = validateXml(req.body)
         console.error('VALIDATE ERROR', error)
         res.status(500).send('error')
-        await logRequest({ subscribeObject: req.body })
+        await logRequest({ subscribeObject: req.body, result: 500 })
         return
     }
 
@@ -81,9 +90,10 @@ app.all('/sub/hook', async (req, res) => {
     const updatedVideoId = subscribeObject.entry?.['yt:videoId'] as string | undefined
     console.log('UpdatedVideoId', updatedVideoId)
 
-    await logRequest({ subscribeObject })
+    await logRequest({ subscribeObject, result: 200 })
 })
 
+// @ts-ignore: req unused
 app.get('/sub/logs', async (req, res) => {
     const data = await db.collection('subs-log').find().sort({ time: -1 }).limit(100).toArray()
     res.send(JSON.stringify(data, void 0, 2))

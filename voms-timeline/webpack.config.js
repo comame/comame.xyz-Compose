@@ -1,6 +1,5 @@
 const { compilerOptions } = require('./tsconfig.json')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const { DefinePlugin } = require('webpack')
 
 const developmentCommon = {
     mode: 'development',

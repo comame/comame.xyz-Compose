@@ -4,6 +4,10 @@ import { render } from 'react-dom'
 import './index.html'
 import './styles/style.scss'
 
+import { firebaseConfig } from '../config/firebaseConfig'
+import firebase from 'firebase/app'
+import 'firebase/messaging'
+
 import { channels } from '../config/channels'
 
 import { useChannelFilter } from './hooks/useChannelFilter'
@@ -13,6 +17,8 @@ import { Header } from './components/header'
 import { Menu } from './components/menu'
 import { Timeline } from './components/timeline'
 import { MenuCloser } from './components/menu-closer'
+
+firebase.initializeApp(firebaseConfig)
 
 function App() {
     const { filter, setFilter } = useChannelFilter(Object.keys(channels).map(name => (channels as any)[name]))
