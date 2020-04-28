@@ -2,6 +2,7 @@ import express from 'express'
 import mongodb from 'mongodb'
 import { parse as parseXml, validate as validateXml } from 'fast-xml-parser'
 import path from 'path'
+import { channels } from '../config/channels'
 
 const MongoClient = mongodb.MongoClient
 
@@ -41,8 +42,19 @@ app.all('/sub/hook', async (req, res) => {
     }
 
     if (queryObj['hub.mode'] == 'subscribe') {
-        const challenge = queryObj['hub.challenge']
-        res.send(challenge)
+        const acceptChannelIds = Object.entries(channels).map(it => it[1])
+        const acceptTopics = acceptChannelIds.map(id =>
+            ('https://www.youtube.com/xml/feeds/videos.xml?channel_id=' + id)
+                .replace(/\?/g, '%3F')
+                .replace(/\=/g, '%3D')
+        )
+
+        if (!acceptTopics.includes(queryObj['hub.topic'])) {
+            res.sendStatus(404)
+        } else {
+            const challenge = queryObj['hub.challenge']
+            res.send(challenge)
+        }
         await logRequest({ queryObj })
         return
     } else if (queryObj['hub.mode'] == 'unsubscribe') {

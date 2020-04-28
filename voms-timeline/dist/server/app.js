@@ -86,6 +86,25 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/config/channels.ts":
+/*!********************************!*\
+  !*** ./src/config/channels.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.channels = {
+    '天野ピカミィ': 'UCajhBT4nMrg3DLS-bLL2RCg',
+    '緋笠トモシカ': 'UC3vzVK_N_SUVKqbX69L_X4g',
+    '磁富モノエ': 'UCaFhsCKSSS821N-EcWmPkUQ'
+};
+
+
+/***/ }),
+
 /***/ "./src/server/app.ts":
 /*!***************************!*\
   !*** ./src/server/app.ts ***!
@@ -103,6 +122,7 @@ const express_1 = __importDefault(__webpack_require__(/*! express */ "express"))
 const mongodb_1 = __importDefault(__webpack_require__(/*! mongodb */ "mongodb"));
 const fast_xml_parser_1 = __webpack_require__(/*! fast-xml-parser */ "fast-xml-parser");
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
+const channels_1 = __webpack_require__(/*! ../config/channels */ "./src/config/channels.ts");
 const MongoClient = mongodb_1.default.MongoClient;
 const app = express_1.default();
 let db;
@@ -138,8 +158,17 @@ app.all('/sub/hook', async (req, res) => {
             } });
     };
     if (queryObj['hub.mode'] == 'subscribe') {
-        const challenge = queryObj['hub.challenge'];
-        res.send(challenge);
+        const acceptChannelIds = Object.entries(channels_1.channels).map(it => it[1]);
+        const acceptTopics = acceptChannelIds.map(id => ('https://www.youtube.com/xml/feeds/videos.xml?channel_id=' + id)
+            .replace(/\?/g, '%3F')
+            .replace(/\=/g, '%3D'));
+        if (!acceptTopics.includes(queryObj['hub.topic'])) {
+            res.sendStatus(404);
+        }
+        else {
+            const challenge = queryObj['hub.challenge'];
+            res.send(challenge);
+        }
         await logRequest({ queryObj });
         return;
     }
