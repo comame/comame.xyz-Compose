@@ -224,7 +224,9 @@ const videoTime_1 = __webpack_require__(/*! ../util/videoTime */ "./src/util/vid
 async function cacheResponse(db, videos) {
     const metadataCollection = db.collection('metadata');
     await metadataCollection.updateOne({}, {
-        lastUpdated: new Date().getTime()
+        '$set': {
+            lastUpdated: new Date().getTime()
+        }
     }, {
         upsert: true
     });
@@ -232,9 +234,12 @@ async function cacheResponse(db, videos) {
     await Promise.all(videos.map(video => videosCollection.updateOne({
         _id: video.id
     }, {
-        _id: video.id,
-        time: videoTime_1.getVideoTime(video).getTime(),
-        item: video
+        '$set': {
+            _id: video.id,
+            time: videoTime_1.getVideoTime(video).getTime(),
+            item: video,
+            update: Date.now()
+        }
     }, {
         upsert: true
     })));
@@ -454,7 +459,7 @@ async function websubExpressHandler(req, res, db) {
     const hmacDigest = crypto_1.default.createHmac('sha1', hmacKey).update(req.body).digest('hex');
     const requestedHmacDigest = (_c = req.header('x-hub-signature')) === null || _c === void 0 ? void 0 : _c.slice('sha1='.length);
     if (hmacDigest != requestedHmacDigest) {
-        console.error('Invalid digest request');
+        console.error('Invalid digest request', 'wants: ' + hmacDigest, 'got: ' + requestedHmacDigest);
         res.send('ok');
         await logRequest({ subscribeObject: req.body, result: 200500, rawBody: req.body });
         return;

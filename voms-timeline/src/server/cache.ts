@@ -9,13 +9,16 @@ interface CacheMeta {
 interface VideoCache {
     _id: Video['id'],
     time: number,
-    item: Video
+    item: Video,
+    update: number
 }
 
 export async function cacheResponse(db: Db, videos: Video[]) {
     const metadataCollection: Collection<CacheMeta> = db.collection('metadata')
     await metadataCollection.updateOne({}, {
-        lastUpdated: new Date().getTime()
+        '$set': {
+            lastUpdated: new Date().getTime()
+        }
     }, {
         upsert: true
     })
@@ -24,9 +27,12 @@ export async function cacheResponse(db: Db, videos: Video[]) {
     await Promise.all(videos.map(video => videosCollection.updateOne({
         _id: video.id
     }, {
-        _id: video.id,
-        time: getVideoTime(video).getTime(),
-        item: video
+        '$set': {
+            _id: video.id,
+            time: getVideoTime(video).getTime(),
+            item: video,
+            update: Date.now()
+        }
     }, {
         upsert: true
     })))

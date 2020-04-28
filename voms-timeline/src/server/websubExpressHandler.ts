@@ -68,7 +68,7 @@ export async function websubExpressHandler(req: Request, res: Response, db: Db):
     const requestedHmacDigest = req.header('x-hub-signature')?.slice('sha1='.length)
 
     if (hmacDigest != requestedHmacDigest) {
-        console.error('Invalid digest request')
+        console.error('Invalid digest request', 'wants: ' + hmacDigest, 'got: ' + requestedHmacDigest)
         res.send('ok')
         await logRequest({ subscribeObject: req.body, result: 200500, rawBody: req.body })
         return
