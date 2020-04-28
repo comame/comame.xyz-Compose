@@ -1,8 +1,10 @@
+import path from 'path'
+import crypto from 'crypto'
 import express from 'express'
 import mongodb from 'mongodb'
 import { parse as parseXml, validate as validateXml } from 'fast-xml-parser'
-import path from 'path'
 import { channels } from '../config/channels'
+import { dotenv } from './dotenv'
 
 const MongoClient = mongodb.MongoClient
 
@@ -28,7 +30,6 @@ app.use((req, res, next) => {
 
 app.get('**', express.static(path.resolve(__dirname, '../front')))
 app.all('/sub/hook', async (req, res) => {
-
     const queryObj = Object.fromEntries(req.originalUrl.split('?')[1]?.split('&').map(it => it.split('=')) ?? [])
 
     const logRequest = async ( { queryObj, subscribeObject, result, rawBody = '' }: {
@@ -85,11 +86,23 @@ app.all('/sub/hook', async (req, res) => {
         return
     }
 
+    const hmacKey = dotenv.WEBSUB_HUB_SECRET
+    const hmacDigest = crypto.createHmac('sha1', hmacKey).update(req.body).digest('hex')
+    const requestedHmacDigest = req.header('x-hub-signature')?.slice('sha1='.length)
+    console.log(hmacDigest, requestedHmacDigest)
+
+    if (hmacDigest != requestedHmacDigest) {
+        console.error('Invalid digest request')
+        res.send('ok')
+        await logRequest({ subscribeObject: req.body, result: 200500, rawBody: req.body })
+        return
+    }
+
     res.send('ok')
 
     const subscribeObject = parseXml(req.body)
 
-    const updatedVideoId = subscribeObject.entry?.['yt:videoId'] as string | undefined
+    const updatedVideoId = subscribeObject.feed?.entry?.['yt:videoId'] as string | undefined
     console.log('UpdatedVideoId', updatedVideoId)
 
     await logRequest({ subscribeObject, result: 200, rawBody: req.body })

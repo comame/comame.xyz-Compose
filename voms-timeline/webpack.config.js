@@ -78,7 +78,12 @@ const server = {
     module: {
         rules: [{
             test: /.ts$/,
-            use: [ 'ts-loader' ]
+            use: [{
+                loader: 'ts-loader',
+                options: {
+                    compilerOptions
+                }
+            }]
         }]
     },
     externals: {

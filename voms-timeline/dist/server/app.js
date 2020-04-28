@@ -99,7 +99,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.channels = {
     '天野ピカミィ': 'UCajhBT4nMrg3DLS-bLL2RCg',
     '緋笠トモシカ': 'UC3vzVK_N_SUVKqbX69L_X4g',
-    '磁富モノエ': 'UCaFhsCKSSS821N-EcWmPkUQ'
+    '磁富モノエ': 'UCaFhsCKSSS821N-EcWmPkUQ',
+    comame: 'UC7pZiSyELnd19GQj3lZ0x1g',
 };
 
 
@@ -118,11 +119,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
+const crypto_1 = __importDefault(__webpack_require__(/*! crypto */ "crypto"));
 const express_1 = __importDefault(__webpack_require__(/*! express */ "express"));
 const mongodb_1 = __importDefault(__webpack_require__(/*! mongodb */ "mongodb"));
 const fast_xml_parser_1 = __webpack_require__(/*! fast-xml-parser */ "fast-xml-parser");
-const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const channels_1 = __webpack_require__(/*! ../config/channels */ "./src/config/channels.ts");
+const dotenv_1 = __webpack_require__(/*! ./dotenv */ "./src/server/dotenv.ts");
 const MongoClient = mongodb_1.default.MongoClient;
 const app = express_1.default();
 let db;
@@ -145,7 +148,7 @@ app.use((req, res, next) => {
 });
 app.get('**', express_1.default.static(path_1.default.resolve(__dirname, '../front')));
 app.all('/sub/hook', async (req, res) => {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     const queryObj = Object.fromEntries((_b = (_a = req.originalUrl.split('?')[1]) === null || _a === void 0 ? void 0 : _a.split('&').map(it => it.split('='))) !== null && _b !== void 0 ? _b : []);
     const logRequest = async ({ queryObj, subscribeObject, result, rawBody = '' }) => {
         await db.collection('subs-log').insertOne({ time: Date.now(), req: {
@@ -193,9 +196,19 @@ app.all('/sub/hook', async (req, res) => {
         await logRequest({ subscribeObject: req.body, result: 500, rawBody: req.body });
         return;
     }
+    const hmacKey = dotenv_1.dotenv.WEBSUB_HUB_SECRET;
+    const hmacDigest = crypto_1.default.createHmac('sha1', hmacKey).update(req.body).digest('hex');
+    const requestedHmacDigest = (_c = req.header('x-hub-signature')) === null || _c === void 0 ? void 0 : _c.slice('sha1='.length);
+    console.log(hmacDigest, requestedHmacDigest);
+    if (hmacDigest != requestedHmacDigest) {
+        console.error('Invalid digest request');
+        res.send('ok');
+        await logRequest({ subscribeObject: req.body, result: 200500, rawBody: req.body });
+        return;
+    }
     res.send('ok');
     const subscribeObject = fast_xml_parser_1.parse(req.body);
-    const updatedVideoId = (_c = subscribeObject.entry) === null || _c === void 0 ? void 0 : _c['yt:videoId'];
+    const updatedVideoId = (_e = (_d = subscribeObject.feed) === null || _d === void 0 ? void 0 : _d.entry) === null || _e === void 0 ? void 0 : _e['yt:videoId'];
     console.log('UpdatedVideoId', updatedVideoId);
     await logRequest({ subscribeObject, result: 200, rawBody: req.body });
 });
@@ -213,6 +226,39 @@ MongoClient.connect('mongodb://mongo:27017', { useUnifiedTopology: true }, (err,
     });
 });
 
+
+/***/ }),
+
+/***/ "./src/server/dotenv.ts":
+/*!******************************!*\
+  !*** ./src/server/dotenv.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
+const path_1 = __webpack_require__(/*! path */ "path");
+exports.dotenv = Object.fromEntries(fs_1.default.readFileSync(path_1.resolve(__dirname, '../../.env'), {
+    encoding: 'utf8'
+}).split('\n').map(line => line.split('=')));
+
+
+/***/ }),
+
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("crypto");
 
 /***/ }),
 
@@ -235,6 +281,17 @@ module.exports = require("express");
 /***/ (function(module, exports) {
 
 module.exports = require("fast-xml-parser");
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
 
 /***/ }),
 
