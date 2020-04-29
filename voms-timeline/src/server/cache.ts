@@ -3,7 +3,8 @@ import { Video } from "../API/YouTubeApiOptions/VideosAPIOptions";
 import { getVideoTime } from '../util/videoTime';
 
 interface CacheMeta {
-    lastUpdated: number
+    lastUpdated: number,
+    lastFetch: number
 }
 
 interface VideoCache {
@@ -13,12 +14,18 @@ interface VideoCache {
     update: number
 }
 
-export async function cacheResponse(db: Db, videos: Video[]) {
+export async function cacheResponse(db: Db, videos: Video[], lastFetch?: number) {
     const metadataCollection: Collection<CacheMeta> = db.collection('metadata')
+
+    const metaUpdate = lastFetch ? {
+        lastUpdated: new Date().getTime(),
+        lastFetch
+    } : {
+        lastUpdated: new Date().getTime()
+    }
+
     await metadataCollection.updateOne({}, {
-        '$set': {
-            lastUpdated: new Date().getTime()
-        }
+        '$set': metaUpdate
     }, {
         upsert: true
     })
@@ -40,6 +47,7 @@ export async function cacheResponse(db: Db, videos: Video[]) {
 
 export async function getCached(db: Db, limit: number = 50): Promise<{
     lastUpdated: number,
+    lastFetch: number,
     videos: Video[]
 }> {
     const metadataCollection: Collection<CacheMeta> = db.collection('metadata')
@@ -52,7 +60,8 @@ export async function getCached(db: Db, limit: number = 50): Promise<{
         .toArray()
 
     const videos = videoCaches.map(it => it.item)
-    const lastUpdated = cacheMetadata?.lastUpdated ?? Date.now()
+    const lastUpdated = cacheMetadata?.lastUpdated ?? 0
+    const lastFetch = cacheMetadata?.lastFetch ?? 0
 
-    return { lastUpdated, videos }
+    return { lastUpdated, lastFetch, videos }
 }
