@@ -2,7 +2,7 @@ import path from 'path'
 import express, { Response } from 'express'
 import { MongoClient, Db } from 'mongodb'
 import { websubExpressHandler } from './websubExpressHandler'
-import { fetchVideo } from './fetchVideo'
+import { fetchVideo, searchVideos } from './fetchVideo'
 import { cacheResponse, getCached } from './cache'
 import { VideosResponse } from '../API/selfApiOptions/options'
 
@@ -30,10 +30,10 @@ app.get('**', express.static(path.resolve(__dirname, '../front')))
 app.all('/sub/hook', async (req, res) => {
     const videoId = await websubExpressHandler(req, res, db)
     if (!videoId) return
-    const video = await fetchVideo(videoId)
-    if (!video) return
+    const videos = await fetchVideo([ videoId ])
+    if (videos?.length == 0 || typeof videos == 'undefined') return
 
-    await cacheResponse(db, [ video ])
+    await cacheResponse(db, videos)
 })
 
 // @ts-ignore: req unused
@@ -44,12 +44,22 @@ app.get('/sub/logs', async (req, res) => {
 
 // @ts-ignore: req unused
 app.get('/api/videos', async (req, res: Response<VideosResponse>) => {
-    const { videos, lastUpdated } = await getCached(db)
+    const { videos, lastUpdated, lastFetch } = await getCached(db)
     res.send({
         kind: 'voms-timeline.comame.xyz#videosResponse',
         items: videos,
         lastUpdated: new Date(lastUpdated).toISOString()
     })
+
+    if (Date.now() - 24 * 60 * 60 * 1000 / 5 >= lastFetch) {
+        const videoIds = await searchVideos()
+        if (videoIds.length == 0) {
+            return
+        }
+        const videos = await fetchVideo(videoIds)
+        if (videos?.length == 0 || typeof videos == 'undefined') return
+        await cacheResponse(db, videos, Date.now())
+    }
 })
 
 MongoClient.connect('mongodb://mongo:27017', { useUnifiedTopology: true }, (err, client) => {

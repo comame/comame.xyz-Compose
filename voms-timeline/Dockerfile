@@ -8,4 +8,4 @@ RUN npm i --production
 
 COPY ./ ./
 
-CMD node dist/server/app.js
+CMD node --enable-source-maps dist/server/app.js

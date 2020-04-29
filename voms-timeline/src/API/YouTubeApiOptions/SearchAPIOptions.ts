@@ -20,7 +20,11 @@ export interface SearchAPIResponse {
         totalResults: number
         resultsPerPage: number
     }
-    items: SearchResult
+    items: SearchResult[]
+}
+
+export function isSearchAPIResponse(arg: any): arg is SearchAPIResponse {
+    return typeof arg == 'object' && arg.kind == 'youtube#searchListResponse'
 }
 
 export interface SearchResult {

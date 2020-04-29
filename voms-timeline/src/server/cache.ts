@@ -4,7 +4,7 @@ import { getVideoTime } from '../util/videoTime';
 
 interface CacheMeta {
     lastUpdated: number,
-    lastFetch: number
+    lastFetch?: number
 }
 
 interface VideoCache {
