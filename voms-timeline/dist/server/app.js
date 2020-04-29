@@ -167,7 +167,7 @@ const cache_1 = __webpack_require__(/*! ./cache */ "./src/server/cache.ts");
 const app = express_1.default();
 let db;
 // Parse body as string
-// @ts-ignore: req unused
+// @ts-ignore: res unused
 app.use((req, res, next) => {
     let bodyText = '';
     req.on('data', (chunk) => {
@@ -197,6 +197,15 @@ app.all('/sub/hook', async (req, res) => {
 app.get('/sub/logs', async (req, res) => {
     const data = await db.collection('subs-log').find().sort({ time: -1 }).limit(100).toArray();
     res.send(JSON.stringify(data, void 0, 2));
+});
+// @ts-ignore: req unused
+app.get('/api/videos', async (req, res) => {
+    const { videos, lastUpdated } = await cache_1.getCached(db);
+    res.send({
+        kind: 'voms-timeline.comame.xyz#videosResponse',
+        items: videos,
+        lastUpdated: new Date(lastUpdated).toISOString()
+    });
 });
 mongodb_1.MongoClient.connect('mongodb://mongo:27017', { useUnifiedTopology: true }, (err, client) => {
     if (err)
@@ -246,6 +255,7 @@ async function cacheResponse(db, videos) {
 }
 exports.cacheResponse = cacheResponse;
 async function getCached(db, limit = 50) {
+    var _a;
     const metadataCollection = db.collection('metadata');
     const videosCollection = db.collection('videos');
     const cacheMetadata = await metadataCollection.findOne({});
@@ -254,7 +264,7 @@ async function getCached(db, limit = 50) {
         .limit(limit)
         .toArray();
     const videos = videoCaches.map(it => it.item);
-    const lastUpdated = cacheMetadata === null || cacheMetadata === void 0 ? void 0 : cacheMetadata.lastUpdated;
+    const lastUpdated = (_a = cacheMetadata === null || cacheMetadata === void 0 ? void 0 : cacheMetadata.lastUpdated) !== null && _a !== void 0 ? _a : Date.now();
     return { lastUpdated, videos };
 }
 exports.getCached = getCached;

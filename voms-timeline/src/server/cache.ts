@@ -39,7 +39,7 @@ export async function cacheResponse(db: Db, videos: Video[]) {
 }
 
 export async function getCached(db: Db, limit: number = 50): Promise<{
-    lastUpdated: number|undefined,
+    lastUpdated: number,
     videos: Video[]
 }> {
     const metadataCollection: Collection<CacheMeta> = db.collection('metadata')
@@ -52,7 +52,7 @@ export async function getCached(db: Db, limit: number = 50): Promise<{
         .toArray()
 
     const videos = videoCaches.map(it => it.item)
-    const lastUpdated = cacheMetadata?.lastUpdated
+    const lastUpdated = cacheMetadata?.lastUpdated ?? Date.now()
 
     return { lastUpdated, videos }
 }
