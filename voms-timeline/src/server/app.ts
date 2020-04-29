@@ -52,6 +52,7 @@ app.get('/api/videos', async (req, res: Response<VideosResponse>) => {
     })
 
     if (Date.now() - 24 * 60 * 60 * 1000 / 5 >= lastFetch) {
+        console.log('SEARCH VIDEOS')
         const videoIds = await searchVideos()
         if (videoIds.length == 0) {
             return

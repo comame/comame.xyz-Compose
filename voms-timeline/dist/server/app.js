@@ -225,6 +225,7 @@ app.get('/api/videos', async (req, res) => {
         lastUpdated: new Date(lastUpdated).toISOString()
     });
     if (Date.now() - 24 * 60 * 60 * 1000 / 5 >= lastFetch) {
+        console.log('SEARCH VIDEOS');
         const videoIds = await fetchVideo_1.searchVideos();
         if (videoIds.length == 0) {
             return;
