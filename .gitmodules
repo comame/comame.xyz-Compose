@@ -1,3 +1,6 @@
 [submodule "home"]
 	path = home
 	url = git@github.com:comame/comame.xyz.git
+[submodule "voms-timeline"]
+	path = voms-timeline
+	url = git@github.com:comame/VOMS-Timeline.git
